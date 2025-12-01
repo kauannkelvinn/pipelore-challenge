@@ -1,65 +1,91 @@
-import Image from "next/image";
+import Link from "next/link";
+import { db } from "@/db";
+import { repairOrders } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
+import { StatusFilter } from "@/components/status-filter";
 
-export default function Home() {
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+const VALID_STATUSES = ["OPEN", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const;
+type ValidStatus = typeof VALID_STATUSES[number];
+
+export default async function Home(props: { searchParams: SearchParams }) {
+  const searchParams = await props.searchParams;
+  const statusParam = typeof searchParams.status === 'string' ? searchParams.status : undefined;
+  
+  const statusFilter: ValidStatus | undefined = 
+    statusParam && VALID_STATUSES.includes(statusParam as ValidStatus) 
+      ? (statusParam as ValidStatus)
+      : undefined;
+
+  const orders = statusFilter 
+    ? await db.select().from(repairOrders).where(eq(repairOrders.status, statusFilter)).orderBy(desc(repairOrders.createdAt))
+    : await db.select().from(repairOrders).orderBy(desc(repairOrders.createdAt));
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Ordens de Serviço</h1>
+          <Link 
+            href="/new" 
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            + Nova Ordem
+          </Link>
         </div>
-      </main>
-    </div>
+
+        <div className="mb-6">
+          <StatusFilter />
+        </div>
+
+        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+          <ul role="list" className="divide-y divide-gray-200">
+            {orders.length === 0 ? (
+              <li className="px-6 py-12 text-center text-gray-500">
+                Nenhuma ordem de serviço encontrada.
+              </li>
+            ) : (
+              orders.map((order) => (
+                <li key={order.id}>
+                  <div className="px-4 py-4 sm:px-6 hover:bg-gray-50 transition block">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-blue-600 truncate">
+                        {order.title}
+                      </p>
+                      <div className="ml-2 shrink-0 flex">
+                        <p className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          ${order.status === 'OPEN' ? 'bg-green-100 text-green-800' : 
+                            order.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
+                            order.status === 'COMPLETED' ? 'bg-gray-100 text-gray-800' :
+                            'bg-red-100 text-red-800'}`}>
+                          {order.status}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2 sm:flex sm:justify-between">
+                      <div className="sm:flex">
+                        <p className="flex items-center text-sm text-gray-500 mr-6">
+                          📍 {order.location}
+                        </p>
+                        <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                          📅 Prazo: {order.dueDate.toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                        <p>
+                          Prioridade: <span className="font-medium">{order.priority}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      </div>
+    </main>
   );
 }
