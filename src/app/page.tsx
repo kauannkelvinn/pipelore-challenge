@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { repairOrders } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { StatusFilter } from "@/components/status-filter";
+import { DeleteButton } from "@/components/delete-button";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
@@ -64,7 +65,9 @@ export default async function Home(props: { searchParams: SearchParams }) {
                         </p>
                       </div>
                     </div>
-                    <div className="mt-2 sm:flex sm:justify-between">
+
+                    <div className="mt-2 sm:flex sm:justify-between sm:items-center">
+                      
                       <div className="sm:flex">
                         <p className="flex items-center text-sm text-gray-500 mr-6">
                           📍 {order.location}
@@ -73,11 +76,23 @@ export default async function Home(props: { searchParams: SearchParams }) {
                           📅 Prazo: {order.dueDate.toLocaleDateString('pt-BR')}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                        <p>
+
+                      <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-4 sm:mt-0">
+                        <p className="text-sm text-gray-500">
                           Prioridade: <span className="font-medium">{order.priority}</span>
                         </p>
+
+                        <div className="flex gap-4 border-t pt-2 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 border-gray-200">
+                            <Link 
+                            href={`/${order.id}/edit`}
+                            className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                            >
+                            Editar
+                            </Link>
+                            <DeleteButton id={order.id} />
+                        </div>
                       </div>
+
                     </div>
                   </div>
                 </li>

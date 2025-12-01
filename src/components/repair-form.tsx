@@ -1,13 +1,34 @@
 "use client";
 
 import { useActionState } from "react";
-import { createRepairOrder } from "@/app/actions";
+import { createRepairOrder, updateRepairOrder } from "@/app/actions";
 
-export function RepairForm() {
-  const [state, action, isPending] = useActionState(createRepairOrder, null);
+type RepairOrder = {
+  id?: number;
+  title: string;
+  description: string;
+  location: string;
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+  status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  dueDate: Date;
+};
+
+export function RepairForm({ initialData }: { initialData?: RepairOrder }) {
+  const actionToUse = initialData?.id 
+    ? updateRepairOrder.bind(null, initialData.id) 
+    : createRepairOrder;
+
+  const [state, action, isPending] = useActionState(actionToUse, null);
+
+  const defaultDate = initialData?.dueDate 
+    ? new Date(initialData.dueDate).toISOString().split('T')[0] 
+    : '';
 
   return (
-    <form action={action} className="space-y-6 max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-100">
+    <form 
+      action={action} 
+      className="space-y-6 max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-100"
+    >
       
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
@@ -15,6 +36,7 @@ export function RepairForm() {
           id="title"
           name="title"
           type="text"
+          defaultValue={initialData?.title}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Ex: Vazamento na pia"
         />
@@ -27,6 +49,7 @@ export function RepairForm() {
           id="description"
           name="description"
           rows={3}
+          defaultValue={initialData?.description}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Detalhes do problema..."
         />
@@ -39,6 +62,7 @@ export function RepairForm() {
           id="location"
           name="location"
           type="text"
+          defaultValue={initialData?.location}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Ex: Torre B - Apto 402"
         />
@@ -52,7 +76,7 @@ export function RepairForm() {
             id="priority"
             name="priority"
             className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            defaultValue="LOW"
+            defaultValue={initialData?.priority || "LOW"}
           >
             <option value="LOW">Baixa</option>
             <option value="MEDIUM">Média</option>
@@ -67,14 +91,32 @@ export function RepairForm() {
             id="dueDate"
             name="dueDate"
             type="date"
+            defaultValue={defaultDate}
             className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
           {state?.errors?.dueDate && <p className="text-red-500 text-sm mt-1">{state.errors.dueDate}</p>}
         </div>
       </div>
 
+      {initialData && (
+        <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+          <select
+            id="status"
+            name="status"
+            className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            defaultValue={initialData.status}
+          >
+            <option value="OPEN">Aberto</option>
+            <option value="IN_PROGRESS">Em Progresso</option>
+            <option value="COMPLETED">Concluído</option>
+            <option value="CANCELLED">Cancelado</option>
+          </select>
+        </div>
+      )}
+
       {state?.message && (
-        <div className="p-3 rounded bg-red-50 text-red-600 text-sm">
+        <div className={`p-3 rounded text-sm ${state.message.includes('Erro') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
           {state.message}
         </div>
       )}
@@ -84,7 +126,9 @@ export function RepairForm() {
         disabled={isPending}
         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isPending ? 'Salvando...' : 'Criar Ordem de Serviço'}
+        {isPending 
+          ? 'Salvando...' 
+          : (initialData ? 'Atualizar Ordem' : 'Criar Ordem de Serviço')}
       </button>
     </form>
   );
