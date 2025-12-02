@@ -17,17 +17,17 @@ export function RepairOrderForm({ initialData }: { initialData?: RepairOrder }) 
   const defaultDate = initialData?.dueDate ? new Date(initialData.dueDate).toISOString().split("T")[0] : "";
 
   return (
-    <form action={action} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">     
-      <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+    <form action={action} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="px-4 py-4 sm:px-8 sm:py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-slate-800">
             {initialData ? "Editar Ordem" : "Detalhes da Solicitação"}
           </h2>
-          <p className="text-sm text-slate-500">Preencha as informações do reparo necessário.</p>
+          <p className="text-xs sm:text-sm text-slate-500">Preencha as informações do reparo necessário.</p>
         </div>
       </div>
 
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-8 space-y-6">
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-700">Título do Reparo</label>
           <input
@@ -119,14 +119,14 @@ export function RepairOrderForm({ initialData }: { initialData?: RepairOrder }) 
         )}
       </div>
 
-      <div className="px-8 py-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-        <Link href="/" className="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-1 transition-colors">
+      <div className="px-4 py-4 sm:px-8 sm:py-6 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+        <Link href="/" className="w-full sm:w-auto text-center text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center justify-center gap-1 transition-colors py-2 sm:py-0">
           <ArrowLeft className="h-4 w-4" /> Cancelar
         </Link>
         <button
           type="submit"
           disabled={isPending}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] disabled:opacity-70 disabled:hover:scale-100 flex items-center gap-2"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
           {initialData ? "Salvar Alterações" : "Criar Ordem"}

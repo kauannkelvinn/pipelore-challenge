@@ -20,22 +20,22 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
-          <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md px-6 h-16 flex items-center justify-between shadow-sm">
+          <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md px-4 sm:px-6 h-16 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Wrench className="h-5 w-5 text-white" />
+              <div className="bg-blue-600 p-1.5 sm:p-2 rounded-lg">
+                <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <span className="font-bold text-xl tracking-tight text-slate-800">Pipelore</span>
+              <span className="font-bold text-lg sm:text-xl tracking-tight text-slate-800">Pipelore</span>
             </div>
             
-            <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
-              <Link href="/" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
+            <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium text-slate-600">
+              <Link href="/" className="flex items-center gap-2 hover:text-blue-600 transition-colors p-2 sm:p-0">
+                <LayoutDashboard className="h-5 w-5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
-              <Link href="/new" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
-                <PlusCircle className="h-4 w-4" />
-                Nova Ordem
+              <Link href="/new" className="flex items-center gap-2 hover:text-blue-600 transition-colors p-2 sm:p-0">
+                <PlusCircle className="h-5 w-5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Nova Ordem</span>
               </Link>
             </nav>
 
@@ -46,11 +46,11 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="flex-1 w-full max-w-7xl mx-auto p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {children}
           </main>
           
-          <footer className="border-t py-6 text-center text-sm text-slate-400 bg-white">
+          <footer className="border-t py-6 text-center text-xs sm:text-sm text-slate-400 bg-white px-4">
             © 2024 Pipelore System. Todos os direitos reservados.
           </footer>
         </div>
