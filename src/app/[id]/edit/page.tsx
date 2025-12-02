@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { repairOrders } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { RepairForm } from "@/components/repair-form";
+import { RepairOrderForm } from "@/components/ui/RepairOrderForm";
 
 export default async function EditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,7 +19,7 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4">
       <h1 className="text-2xl font-bold text-center mb-6">Editar Ordem #{orderId}</h1>
-      <RepairForm initialData={order} />
+      <RepairOrderForm initialData={order} />
     </main>
   );
 }
