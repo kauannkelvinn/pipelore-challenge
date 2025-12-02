@@ -1,22 +1,12 @@
-import { RepairForm } from "@/components/repair-form";
+import { RepairOrderForm } from "@/components/ui/RepairOrderForm";
 import Link from "next/link";
 
-export default function NewRepairOrderPage() {
+export default function NewOrderPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Nova Ordem de Serviço</h1>
-          <Link 
-            href="/" 
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium"
-          >
-            ← Voltar para listagem
-          </Link>
-        </div>
-        
-        <RepairForm />
-      </div>
-    </main>
-  );
+    <main className="container mx-auto py-10 px-4 max-w-2xl">
+      <Link href="/" className="text-gray-500 mb-4 block">← Voltar</Link>
+      <h1 className="text-2xl font-bold mb-6">Nova Ordem</h1>
+      <RepairOrderForm />
+    </main>
+  );
 }
